@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <div>App</div>
+  <div class="app">
     <router-view></router-view>
   </div>
 </template>
@@ -12,5 +11,5 @@ export default {
 </script>
 
 <style>
-
+@import url('./style/base.css');
 </style>
