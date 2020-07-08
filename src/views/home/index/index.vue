@@ -5,20 +5,24 @@
       <van-tab v-for="(item, index) in channels" :key="index" :title="item.name">
         <van-pull-refresh v-model="item.isLoading" @refresh="onRefresh">
           <van-list v-model="item.loading" :finished="item.finished" finished-text="没有更多了" @load="onLoad">
-            <van-cell v-for="(subitem, subindex) in item.articleList" :key="subindex" :title="subitem.title" />
+            <van-cell class="mycell" v-for="(subitem, subindex) in item.articleList" :key="subindex" :title="subitem.title" />
           </van-list>
         </van-pull-refresh>
       </van-tab>
     </van-tabs>
-    <div class="tabBtn">
+    <div class="tabBtn" @click="$refs.channels.show = true">
       <van-icon name="wap-nav" />
     </div>
+    <!-- 频道弹出层 -->
+    <channels :active.sync="active" :channels="channels" ref="channels" />
   </div>
 </template>
 
 <script>
-import { apiGetChannels, apiGetArticleList } from '@/api/index.js'
+import { apiGetChannels } from '@/api/index.js'
+import { apiGetArticleList } from '@/api/article'
 import { localGet } from '@/utils/mylocal'
+import channels from './com/channels'
 export default {
   data () {
     return {
@@ -56,19 +60,26 @@ export default {
       const currentChannel = this.channels[this.active]
       const id = currentChannel.id
       const res = await apiGetArticleList(id)
-      currentChannel.articleList = res.data.data.results
-      this.$set(currentChannel, 'loading', true)
+      currentChannel.articleList = [...currentChannel.articleList, ...res.data.data.results]
+      currentChannel.loading = false
+      if (res.data.data.results.length === 0) {
+        currentChannel.finished = true
+      }
     },
-    onRefresh () {
+    async onRefresh () {
       const currentChannel = this.channels[this.active]
-      setTimeout(() => {
-        this.$toast('刷新成功')
-        this.$set(currentChannel, 'isLoading', false)
-      }, 1000)
+      const id = currentChannel.id
+      const res = await apiGetArticleList(id)
+      currentChannel.articleList = res.data.data.results
+      currentChannel.loading = false
+      currentChannel.isLoading = false
     }
   },
   mounted () {
     this.getChannels()
+  },
+  components: {
+    channels
   }
 }
 </script>
@@ -97,6 +108,9 @@ export default {
   }
   /deep/ .van-tabs__nav {
     width: 88%;
+  }
+  .mycell {
+    height: 100px;
   }
 }
 </style>
