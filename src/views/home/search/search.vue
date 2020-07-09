@@ -14,35 +14,24 @@
       />
     </form>
     <!-- 联想区域 -->
-    <van-cell-group v-if="show == true">
+    <van-cell-group v-if="suggestionList.length != 0">
       <van-cell title="联想区域" />
-      <van-cell v-for="(item, index) in suggestionList" :key="index" icon="search" :title="item" />
+      <van-cell @click="onSearch(item.item)" v-for="(item, index) in suggestionList" :key="index" icon="search">
+        <template #title>
+          <div v-html="item.htmlItem"></div>
+        </template>
+      </van-cell>
     </van-cell-group>
     <!-- 历史记录 -->
     <van-cell-group v-else>
       <van-cell title="历史记录">
         <template #default>
-          <van-icon name="delete" />
+          <van-icon @click="delAll" name="delete" />
         </template>
       </van-cell>
-      <van-cell icon="search" title="程序员为什么XXX">
+      <van-cell @click="onSearch(item)" v-for="(item, index) in historyList" :key="index" icon="search" :title="item">
         <template #default>
-          <van-icon name="clear" />
-        </template>
-      </van-cell>
-      <van-cell icon="search" title="程序员为什么XXX">
-        <template #default>
-          <van-icon name="clear" />
-        </template>
-      </van-cell>
-      <van-cell icon="search" title="程序员为什么XXX">
-        <template #default>
-          <van-icon name="clear" />
-        </template>
-      </van-cell>
-      <van-cell icon="search" title="程序员为什么XXX">
-        <template #default>
-          <van-icon name="clear" />
+          <van-icon @click.stop="del(index)" name="clear" />
         </template>
       </van-cell>
     </van-cell-group>
@@ -51,34 +40,60 @@
 
 <script>
 import { apiSuggestion } from '@/api/search'
+import { localSet, localGet, localDel } from '@/utils/mylocal'
 export default {
   data () {
     return {
       value: '',
-      show: false,
       suggestionList: [],
-      timer: null
+      timer: null,
+      historyList: localGet('history') || []
     }
   },
   methods: {
     onSearch (val) {
-      this.$toast(val)
       this.$router.push(`/searchResult/${val}`)
+      this.historyList.unshift(val)
+      this.historyList = [...new Set(this.historyList)]
+      localSet(this.historyList, 'history')
     },
     onCancel () {
       this.$toast('取消')
     },
     onInput (val) {
-      if (val.trim().length !== 0) {
-        this.show = true
-        clearTimeout(this.timer)
-        this.timer = setTimeout(async () => {
-          const res = await apiSuggestion(val)
-          this.suggestionList = res.data.data.options
-        }, 500)
-      } else {
+      if (val.trim().length === 0) {
         this.suggestionList = []
+        return
       }
+      clearTimeout(this.timer)
+      this.timer = setTimeout(async () => {
+        const res = await apiSuggestion(val)
+        this.suggestionList = res.data.data.options
+        this.suggestionList = this.suggestionList.map(item => {
+          return {
+            htmlItem: item.replace(val, `<span style="color: #858585">${val}</span>`),
+            item: item
+          }
+        })
+      }, 500)
+    },
+    del (index) {
+      this.historyList.splice(index, 1)
+      localSet(this.historyList, 'history')
+    },
+    delAll () {
+      this.$dialog.confirm({
+        title: '提示',
+        message: '是否清空历史记录'
+      })
+        .then(() => {
+          // on confirm
+          this.historyList = []
+          localDel('history')
+        })
+        .catch(() => {
+          // on cancel
+        })
     }
   }
 }

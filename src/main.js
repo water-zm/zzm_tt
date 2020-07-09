@@ -6,11 +6,11 @@ import Vant, { Lazyload } from 'vant'
 import 'vant/lib/index.css'
 import './style/index.css'
 import '@/filter/timef'
+import pluginObj from './utils/myplugin'
 
 Vue.use(Vant)
 Vue.use(Lazyload)
-Vue.config.productionTip = false
-
+Vue.use(pluginObj)
 Vue.config.productionTip = false
 
 new Vue({

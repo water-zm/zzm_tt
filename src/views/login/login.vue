@@ -60,7 +60,11 @@ export default {
         const res = await toLogin(this.user)
         localSet(res.data.data)
         this.$store.commit('setUserInfo', res.data.data)
-        this.$router.push('/home')
+        if (this.$route.path === '/login') {
+          this.$router.push('/home')
+        } else {
+          this.$router.back()
+        }
       } catch (err) {
         this.$toast.fail('失败文案')
       }

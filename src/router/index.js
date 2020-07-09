@@ -21,6 +21,10 @@ const routes = [
     component: useVant
   },
   {
+    path: '/checkLogin',
+    component: login
+  },
+  {
     path: '/login',
     component: login
   },
