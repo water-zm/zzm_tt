@@ -10,3 +10,25 @@ export function apiGetArticleList (id) {
     }
   })
 }
+
+export function apiDisLikes (target) {
+  return instance({
+    url: '/app/v1_0/article/dislikes',
+    method: 'POST',
+    data: {
+      target: target
+    }
+  })
+}
+
+export function apiReports ({ artId, type }) {
+  return instance({
+    url: '/app/v1_0/article/reports',
+    method: 'POST',
+    data: {
+      target: artId,
+      type: type,
+      remark: ''
+    }
+  })
+}

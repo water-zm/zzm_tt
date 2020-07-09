@@ -1,8 +1,12 @@
 import axios from 'axios'
 import store from '@/store/index.js'
+import jsonbigint from 'json-bigint'
 
 const instance = axios.create({
-  baseURL: 'http://ttapi.research.itcast.cn'
+  baseURL: 'http://ttapi.research.itcast.cn',
+  transformResponse: [function (data) {
+    return jsonbigint.parse(data)
+  }]
 })
 
 instance.interceptors.request.use(function (config) {

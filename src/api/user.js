@@ -7,3 +7,13 @@ export function toLogin (data) {
     data
   })
 }
+
+export function apiBlackLists (autId) {
+  return instance({
+    url: '/app/v1_0/user/blacklists',
+    method: 'POST',
+    data: {
+      target: autId
+    }
+  })
+}

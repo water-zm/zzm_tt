@@ -5,7 +5,26 @@
       <van-tab v-for="(item, index) in channels" :key="index" :title="item.name">
         <van-pull-refresh v-model="item.isLoading" @refresh="onRefresh">
           <van-list v-model="item.loading" :finished="item.finished" finished-text="没有更多了" @load="onLoad">
-            <van-cell class="mycell" v-for="(subitem, subindex) in item.articleList" :key="subindex" :title="subitem.title" />
+            <van-cell v-for="(subitem, subindex) in item.articleList" :key="subindex" :title="subitem.title">
+              <template #title>
+                <h4>{{ subitem.title }}</h4>
+                <van-grid v-if="subitem.cover.type !== 0" :border="false" :column-num="3">
+                  <van-grid-item v-for="(coveritem, coverindex) in subitem.cover.images" :key="coverindex">
+                    <van-image lazy-load :src="coveritem" />
+                  </van-grid-item>
+                </van-grid>
+                <div class="box">
+                  <div class="left">
+                    <span>{{ subitem.aut_name }}</span>
+                    <span>{{ subitem.comm_count }} 评论</span>
+                    <span>{{ subitem.pubdate | timefilter }}</span>
+                  </div>
+                  <div class="right">
+                    <van-icon @click="openMore(subitem)" name="ellipsis"></van-icon>
+                  </div>
+                </div>
+              </template>
+            </van-cell>
           </van-list>
         </van-pull-refresh>
       </van-tab>
@@ -15,19 +34,28 @@
     </div>
     <!-- 频道弹出层 -->
     <channels :active.sync="active" :channels="channels" ref="channels" />
+    <!-- 更多操作弹出层 -->
+    <more  @dislike="dislike" :autId="autId" :artId="artId" ref="more" />
   </div>
 </template>
 
 <script>
 import { apiGetChannels } from '@/api/index.js'
-import { apiGetArticleList } from '@/api/article'
+import { apiGetArticleList, apiDisLikes } from '@/api/article'
 import { localGet } from '@/utils/mylocal'
 import channels from './com/channels'
+import more from './com/more'
 export default {
   data () {
     return {
+      // 当前频道
       active: 0,
-      channels: []
+      // 频道列表
+      channels: [],
+      // 文章id
+      artId: 0,
+      // 作者id
+      autId: 0
     }
   },
   methods: {
@@ -73,13 +101,32 @@ export default {
       currentChannel.articleList = res.data.data.results
       currentChannel.loading = false
       currentChannel.isLoading = false
+    },
+    openMore (item) {
+      this.$refs.more.show = true
+      this.artId = item.art_id
+      this.autId = item.aut_id
+    },
+    async dislike (id) {
+      try {
+        this.channels[this.active].articleList.forEach((item, index) => {
+          if (item.artId === id) {
+            this.channels[this.active].articleList.splice(index, 1)
+          }
+        })
+        await apiDisLikes(id)
+      } catch (err) {
+        this.$toast(err)
+      }
+      this.show = false
     }
   },
   mounted () {
     this.getChannels()
   },
   components: {
-    channels
+    channels,
+    more
   }
 }
 </script>
@@ -109,8 +156,17 @@ export default {
   /deep/ .van-tabs__nav {
     width: 88%;
   }
-  .mycell {
-    height: 100px;
+  .box {
+    display: flex;
+    justify-content: space-between;
+    .right {
+      font-size: 20px;
+    }
+    .left {
+      span {
+        margin-right: 10px;
+      }
+    }
   }
 }
 </style>

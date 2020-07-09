@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { toLogin } from '@/api/login'
+import { toLogin } from '@/api/user'
 import { localSet } from '@/utils/mylocal'
 export default {
   data () {

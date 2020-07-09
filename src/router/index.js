@@ -4,9 +4,10 @@ import useVant from '../views/Vant/useVant.vue'
 import login from '../views/login/login.vue'
 import home from '../views/home/home.vue'
 import index from '../views/home/index/index.vue'
-import question from '../views/home/question/question.vue'
+import search from '../views/home/search/search.vue'
 import video from '../views/home/video/video.vue'
 import my from '../views/home/my/my.vue'
+import searchResult from '../views/searchResult/searchResult.vue'
 
 Vue.use(VueRouter)
 
@@ -29,10 +30,14 @@ const routes = [
     redirect: '/index',
     children: [
       { path: '/index', component: index },
-      { path: '/question', component: question },
+      { path: '/search', component: search },
       { path: '/video', component: video },
       { path: '/my', component: my }
     ]
+  },
+  {
+    path: '/searchResult/:key',
+    component: searchResult
   }
 ]
 
