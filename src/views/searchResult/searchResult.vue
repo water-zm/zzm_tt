@@ -3,7 +3,7 @@
     <van-nav-bar title="搜索结果" @click-left="back" fixed left-arrow class="l-title" />
     <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
       <van-cell-group>
-        <van-cell v-for="(item, index) in resultList" :key="index">
+        <van-cell @click="getDetail(item)" v-for="(item, index) in resultList" :key="index">
           <template #title>
             <h4>{{ item.title }}</h4>
             <van-grid v-if="item.cover.type !== 0" :border="false" :column-num="3">
@@ -69,6 +69,9 @@ export default {
         return
       }
       console.log('留言')
+    },
+    getDetail (item) {
+      this.$router.push(`/detail/${item.art_id}`)
     }
   }
 }

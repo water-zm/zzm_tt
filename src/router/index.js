@@ -8,13 +8,14 @@ import search from '../views/home/search/search.vue'
 import video from '../views/home/video/video.vue'
 import my from '../views/home/my/my.vue'
 import searchResult from '../views/searchResult/searchResult.vue'
+import detail from '../views/detail/detail.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    component: login
+    redirect: '/login'
   },
   {
     path: '/useVant',
@@ -42,6 +43,10 @@ const routes = [
   {
     path: '/searchResult/:key',
     component: searchResult
+  },
+  {
+    path: '/detail/:artid',
+    component: detail
   }
 ]
 
