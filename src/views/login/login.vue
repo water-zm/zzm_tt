@@ -34,7 +34,7 @@ export default {
   data () {
     return {
       user: {
-        mobile: '13111111111',
+        mobile: '13777777777',
         code: '246810'
       },
       rules: {

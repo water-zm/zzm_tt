@@ -1,7 +1,7 @@
 <template>
   <div class="detail">
       <!-- 头部 -->
-    <van-nav-bar title="文章详情" @click-left="back" fixed left-arrow class="l-title" />
+    <van-nav-bar title="文章详情" @click-left="$router.back()" fixed left-arrow class="l-title" />
     <!-- 标题 作者 -->
     <van-cell>
       <template #title>
@@ -50,7 +50,9 @@
     <comment :item="item" v-for="(item, index) in commentList" :key="index" />
     </van-list>
     <!-- 评论框 -->
-    <write />
+    <write :isReply="false" @passcomment="passcomment" />
+    <!-- 评论回复 -->
+    <reply ref="reply" />
   </div>
 </template>
 
@@ -60,6 +62,7 @@ import { apiGetArticles, apiLikings, apiDisLikings, apiLike, apiDisLike } from '
 import { apiGetComment } from '@/api/comment'
 import comment from './com/comment'
 import write from './com/write'
+import reply from './com/reply'
 export default {
   data () {
     return {
@@ -74,16 +77,13 @@ export default {
     }
   },
   methods: {
-    back () {
-      this.$router.back()
-    },
     async onLoad () {
       const res = await apiGetComment({
         artId: this.artId,
         offset: this.offset,
         limit: this.limit
       })
-      console.log(res)
+      // console.log(res)
       this.commentList = [...this.commentList, ...res.data.data.results]
       this.offset = res.data.data.last_id
       this.endid = res.data.data.end_id
@@ -91,6 +91,10 @@ export default {
       if (this.endid === this.offset) {
         this.finished = true
       }
+    },
+    // 添加评论
+    passcomment (mycom) {
+      this.commentList.unshift(mycom)
     },
     // 关注
     async follow (autId) {
@@ -129,7 +133,8 @@ export default {
   },
   components: {
     comment,
-    write
+    write,
+    reply
   }
 }
 </script>

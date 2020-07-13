@@ -12,22 +12,46 @@
     class="search"
   >
     <template #action>
-        <van-button type="info">发送</van-button>
+        <van-button @click="onSearch" type="info">发送</van-button>
     </template>
   </van-search>
   </div>
 </template>
 
 <script>
+import { apiAddComment, apiAddReply } from '@/api/comment'
 export default {
+  props: ['isReply', 'currentComment'],
   data () {
     return {
       value: ''
     }
   },
   methods: {
-    onSearch (val) {
-      this.$toast(val)
+    async onSearch (val) {
+      if (this.value.trim().length === 0) {
+        this.value = ''
+        return
+      }
+      if (this.isReply) {
+        // 评论回复
+        const res = await apiAddReply({
+          comId: this.currentComment.com_id.toString(),
+          content: this.value,
+          artId: this.$route.params.artid
+        })
+        const mycom = res.data.data.new_obj
+        this.$emit('passcomment', mycom)
+      } else {
+        // 文章评论
+        const res = await apiAddComment({
+          artId: this.$route.params.artid,
+          content: this.value
+        })
+        const mycom = res.data.data.new_obj
+        this.$emit('passcomment', mycom)
+      }
+      this.value = ''
     },
     onCancel () {
       this.$toast('取消')
