@@ -16,7 +16,7 @@
               <span class="iconfont icon-tubiaozhizuo-"></span>
           </template>
           <template #button>
-              <van-button size="small" class="codeBtn" round>发送验证码</van-button>
+              <van-button native-type="button" size="small" class="codeBtn" round>发送验证码</van-button>
           </template>
         </van-field>
       </van-cell-group>

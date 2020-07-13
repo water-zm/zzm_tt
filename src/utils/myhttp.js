@@ -6,7 +6,11 @@ import { localSet } from '@/utils/mylocal'
 const instance = axios.create({
   baseURL: 'http://ttapi.research.itcast.cn',
   transformResponse: [function (data) {
-    return jsonbigint.parse(data)
+    try {
+      return jsonbigint.parse(data)
+    } catch (error) {
+      return data
+    }
   }]
 })
 
@@ -25,7 +29,6 @@ instance.interceptors.request.use(function (config) {
 instance.interceptors.response.use(function (response) {
   return response
 }, async function (error) {
-  console.dir(error)
   if (error.response.status === 401) {
     const refToken = store.state.userInfo.refresh_token
     const res = await instanceToken({
@@ -39,7 +42,6 @@ instance.interceptors.response.use(function (response) {
       token: res.data.data.token,
       refresh_token: refToken
     }
-    console.log(res)
     store.commit('setUserInfo', objToken)
     localSet(objToken)
     return instance(error.config)

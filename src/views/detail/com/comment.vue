@@ -1,23 +1,23 @@
 <template>
   <div class="comment">
-      <van-cell v-for="(item, index) in 8" :key="index">
+      <van-cell>
           <template #title>
             <div class="box">
             <div class="left">
                 <div class="img">
-                <img src="http://b-ssl.duitang.com/uploads/item/201805/18/20180518134730_vnJXa.thumb.700_0.jpeg" alt />
+                <img :src="item.aut_photo" />
                 </div>
             </div>
             <div class="main">
-                <div class="name">名字</div>
-                <div class="cont">内容</div>
+                <div class="name">{{ item.aut_name }}</div>
+                <div class="cont">{{ item.content }}</div>
                 <div class="info">
-                    <span>六个月内 </span>
-                    <span>回复 0</span>
+                    <span>{{ item.pubdate | timefilter }}</span>
+                    <span>回复 {{ item.reply_count }}</span>
                 </div>
             </div>
             <div class="right">
-                <van-icon name="like-o" /> 0
+                <van-icon name="like-o" /> {{ item.like_count }}
             </div>
             </div>
           </template>
@@ -27,7 +27,11 @@
 
 <script>
 export default {
-
+  props: ['item'],
+  data () {
+    return {
+    }
+  }
 }
 </script>
 
