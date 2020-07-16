@@ -6,7 +6,6 @@
     left-icon=""
     placeholder="发表评论"
     @search="onSearch"
-    @cancel="onCancel"
     background="#e9ebec"
     shape="round"
     class="search"
@@ -52,9 +51,6 @@ export default {
         this.$emit('passcomment', mycom)
       }
       this.value = ''
-    },
-    onCancel () {
-      this.$toast('取消')
     }
   }
 }
